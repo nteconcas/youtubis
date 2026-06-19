@@ -23,5 +23,5 @@ RUN mkdir -p downloads
 # Expor porta 5540
 EXPOSE 5540
 
-# Comando para rodar em produção com Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5540", "app:app"]
+# Comando para rodar em produção com Gunicorn (2 workers para economizar memória)
+CMD ["gunicorn", "-w", "2", "--timeout", "120", "-b", "0.0.0.0:5540", "app:app"]
