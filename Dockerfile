@@ -20,8 +20,8 @@ COPY . .
 # Criar diretório de downloads
 RUN mkdir -p downloads
 
-# Expor porta 8796
-EXPOSE 8796
+# Expor porta 5540
+EXPOSE 5540
 
 # Comando para rodar em produção com Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8796", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5540", "app:app"]

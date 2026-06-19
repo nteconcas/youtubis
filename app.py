@@ -6,7 +6,7 @@ Usando Jinja2, Font Awesome e yt-dlp
 Para rodar:
     python app.py
 Ou em producao:
-    gunicorn -w 4 -b 0.0.0.0:8796 app:app
+    gunicorn -w 4 -b 0.0.0.0:5540 app:app
 
 Requisitos: pip install -r requirements.txt
 """
@@ -522,7 +522,7 @@ if __name__ == "__main__":
     print("=" * 50)
     print("  NTEtube - YouTube Downloader Web")
     print("=" * 50)
-    print(f"  Acesse: http://localhost:8796")
+    print(f"  Acesse: http://localhost:5540")
     print(f"  Pasta downloads: {DOWNLOAD_DIR}")
     print("=" * 50)
-    app.run(host="0.0.0.0", port=8796, debug=True)
+    app.run(host="0.0.0.0", port=5540, debug=True)

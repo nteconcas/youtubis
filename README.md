@@ -52,7 +52,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-O site estará disponível em: **http://localhost:8796**
+O site estará disponível em: **http://localhost:5540**
 
 ---
 
@@ -63,10 +63,10 @@ O site estará disponível em: **http://localhost:8796**
 docker build -t ntetube .
 
 # Executar o container
-docker run -d -p 8796:8796 --name ntetube ntetube
+docker run -d -p 5540:5540 --name ntetube ntetube
 ```
 
-Acesse: **http://localhost:8796**
+Acesse: **http://localhost:5540**
 
 ---
 
@@ -131,19 +131,19 @@ youtube_downloader_web/
 ### Opção 1: Flask em Modo de Desenvolvimento
 ```bash
 python app.py
-# Acesse: http://IP_DO_SERVIDOR:8796
+# Acesse: http://IP_DO_SERVIDOR:5540
 ```
 
 ### Opção 2: Gunicorn (Produção)
 ```bash
 pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8796 app:app
+gunicorn -w 4 -b 0.0.0.0:5540 app:app
 ```
 
 ### Opção 3: Docker
 ```bash
 docker build -t ntetube .
-docker run -d -p 8796:8796 --name ntetube ntetube
+docker run -d -p 5540:5540 --name ntetube ntetube
 ```
 
 ### Configuração de Rede
@@ -159,7 +159,7 @@ ip addr show
 
 2. Acesse pelo navegador:
 ```
-http://IP_DO_SERVIDOR:8796
+http://IP_DO_SERVIDOR:5540
 ```
 
 ---
