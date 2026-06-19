@@ -1,12 +1,12 @@
 """
-TubeDL - YouTube Downloader Web
+NTEtube - YouTube Downloader Web
 Aplicativo web em Flask para baixar musicas e videos do YouTube
 Usando Jinja2, Font Awesome e yt-dlp
 
 Para rodar:
     python app.py
 Ou em producao:
-    gunicorn -w 4 -b 0.0.0.0:5000 app:app
+    gunicorn -w 4 -b 0.0.0.0:8796 app:app
 
 Requisitos: pip install -r requirements.txt
 """
@@ -32,7 +32,7 @@ MAX_HISTORY = 100
 CLEANUP_INTERVAL_HOURS = 24
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "tubedl-secret-key-2026")
+app.secret_key = os.environ.get("SECRET_KEY", "ntetube-secret-key-2026")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 app.config["DOWNLOAD_FOLDER"] = str(DOWNLOAD_DIR)
 
@@ -520,9 +520,9 @@ def server_error(e):
 if __name__ == "__main__":
     start_cleanup_thread()
     print("=" * 50)
-    print("  TubeDL - YouTube Downloader Web")
+    print("  NTEtube - YouTube Downloader Web")
     print("=" * 50)
-    print(f"  Acesse: http://localhost:5000")
+    print(f"  Acesse: http://localhost:8796")
     print(f"  Pasta downloads: {DOWNLOAD_DIR}")
     print("=" * 50)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=8796, debug=True)

@@ -1,4 +1,4 @@
-# 🎬 TubeDL - YouTube Downloader Web
+# 🎬 NTEtube - YouTube Downloader Web
 
 Aplicativo web em Flask para baixar músicas e vídeos do YouTube, com interface moderna usando **Jinja2**, **Tailwind CSS** e **Font Awesome**.
 
@@ -52,7 +52,21 @@ pip install -r requirements.txt
 python app.py
 ```
 
-O site estará disponível em: **http://localhost:5000**
+O site estará disponível em: **http://localhost:8796**
+
+---
+
+## 🐳 Docker
+
+```bash
+# Construir a imagem
+docker build -t ntetube .
+
+# Executar o container
+docker run -d -p 8796:8796 --name ntetube ntetube
+```
+
+Acesse: **http://localhost:8796**
 
 ---
 
@@ -61,6 +75,7 @@ O site estará disponível em: **http://localhost:5000**
 ```
 youtube_downloader_web/
 ├── app.py                  # Aplicação Flask principal
+├── Dockerfile              # Configuração Docker
 ├── requirements.txt        # Dependências Python
 ├── downloads/              # Pasta de downloads (auto-criada)
 ├── static/
@@ -116,25 +131,19 @@ youtube_downloader_web/
 ### Opção 1: Flask em Modo de Desenvolvimento
 ```bash
 python app.py
-# Acesse: http://IP_DO_SERVIDOR:5000
+# Acesse: http://IP_DO_SERVIDOR:8796
 ```
 
 ### Opção 2: Gunicorn (Produção)
 ```bash
 pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+gunicorn -w 4 -b 0.0.0.0:8796 app:app
 ```
 
 ### Opção 3: Docker
-```dockerfile
-FROM python:3.11-slim
-RUN apt-get update && apt-get install -y ffmpeg
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+```bash
+docker build -t ntetube .
+docker run -d -p 8796:8796 --name ntetube ntetube
 ```
 
 ### Configuração de Rede
@@ -150,12 +159,7 @@ ip addr show
 
 2. Acesse pelo navegador:
 ```
-http://IP_DO_SERVIDOR:5000
-```
-
-3. Para porta fixa, configure no `app.py`:
-```python
-app.run(host="0.0.0.0", port=5000)
+http://IP_DO_SERVIDOR:8796
 ```
 
 ---
