@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Download - TubeDL{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-gray-50 min-h-screen flex items-center">
+    <div class="max-w-md mx-auto px-4 text-center">
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <div class="relative w-20 h-20 mx-auto mb-6">
+                <div class="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-red-500 rounded-full border-t-transparent animate-spin"></div>
+                <i class="fas fa-download absolute inset-0 flex items-center justify-center text-red-500 text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Processando Download</h2>
+            <p class="text-gray-500 mb-6">Aguarde enquanto preparamos seu arquivo...</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                <div class="bg-red-500 h-2 rounded-full animate-pulse" style="width: 60%"></div>
+            </div>
+            <p class="text-sm text-gray-400">Você será redirecionado automaticamente</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

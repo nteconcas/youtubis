@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico - TubeDL{% endblock %}
+
+{% block content %}
+<section class="py-8 bg-gray-50 min-h-screen">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Breadcrumb -->
+        <nav class="flex items-center text-sm text-gray-500 mb-6">
+            <a href="{{ url_for('index') }}" class="hover:text-red-500 transition-colors">
+                <i class="fas fa-home mr-1"></i>Início
+            </a>
+            <i class="fas fa-chevron-right mx-2 text-xs"></i>
+            <span class="text-gray-900 font-medium">Histórico</span>
+        </nav>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-history text-red-500 mr-3"></i>
+                        Histórico de Downloads
+                    </h1>
+                    <p class="text-gray-500 mt-2">{{ history|length }} download(s) registrado(s)</p>
+                </div>
+                {% if history %}
+                <button onclick="clearAllHistory()" 
+                        class="mt-4 md:mt-0 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-lg transition-colors text-sm flex items-center">
+                    <i class="fas fa-trash-alt mr-2"></i>Limpar Tudo
+                </button>
+                {% endif %}
+            </div>
+
+            {% if history %}
+            <div class="divide-y divide-gray-100">
+                {% for item in history|reverse %}
+                <div class="p-6 hover:bg-gray-50 transition-colors group" id="history-item-{{ item.id }}">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                        <!-- Thumbnail -->
+                        <div class="relative w-full md:w-48 aspect-video rounded-xl overflow-hidden bg-gray-200 flex-shrink-0">
+                            {% if item.thumbnail %}
+                            <img src="{{ item.thumbnail }}" alt="{{ item.title }}" class="w-full h-full object-cover">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                <i class="fas fa-music text-3xl"></i>
+                            </div>
+                            {% endif %}
+                            <div class="absolute top-2 left-2 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-md">
+                                {% if item.mode == 'video' %}
+                                <i class="fas fa-video mr-1"></i>Vídeo
+                                {% else %}
+                                <i class="fas fa-music mr-1"></i>Áudio
+                                {% endif %}
+                            </div>
+                            {% if item.duration %}
+                            <div class="absolute bottom-2 right-2 px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs font-bold rounded-md">
+                                {{ item.duration // 60 }}:{{ "%02d"|format(item.duration % 60) }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-grow min-w-0">
+                            <h3 class="font-bold text-gray-900 truncate mb-1">{{ item.title }}</h3>
+                            <p class="text-sm text-gray-500 mb-2">
+                                <i class="fas fa-user mr-1"></i>{{ item.channel }}
+                            </p>
+                            <div class="flex flex-wrap items-center gap-3 text-sm">
+                                <span class="px-2 py-1 bg-gray-100 rounded-md text-gray-600">
+                                    <i class="fas fa-file mr-1"></i>{{ item.format|upper }}
+                                </span>
+                                <span class="px-2 py-1 bg-gray-100 rounded-md text-gray-600">
+                                    <i class="fas fa-tachometer-alt mr-1"></i>{{ item.quality }}
+                                </span>
+                                <span class="px-2 py-1 bg-gray-100 rounded-md text-gray-600">
+                                    <i class="fas fa-weight-hanging mr-1"></i>{{ item.filesize | filesize }}
+                                </span>
+                                <span class="px-2 py-1 bg-gray-100 rounded-md text-gray-600">
+                                    <i class="far fa-calendar mr-1"></i>{{ item.date[:10] }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center space-x-2 flex-shrink-0">
+                            {% if item.file_exists %}
+                            <a href="{{ url_for('download_file', filename=item.filename) }}" 
+                               class="w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-sm hover:shadow-md"
+                               title="Baixar arquivo">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            {% else %}
+                            <div class="w-10 h-10 bg-gray-200 text-gray-400 rounded-lg flex items-center justify-center cursor-not-allowed" title="Arquivo expirado">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            {% endif %}
+
+                            <button onclick="deleteHistoryItem('{{ item.id }}')" 
+                                    class="w-10 h-10 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg flex items-center justify-center transition-colors"
+                                    title="Remover do histórico">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-12 text-center">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-inbox text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Nenhum download ainda</h3>
+                <p class="text-gray-500 mb-6">Seus downloads aparecerão aqui após a conclusão.</p>
+                <a href="{{ url_for('index') }}" class="inline-flex items-center px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Novo Download
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function deleteHistoryItem(id) {
+    if (!confirm('Remover este item do histórico?')) return;
+
+    fetch(`/api/delete-file/${id}`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`history-item-${id}`).remove();
+                showToast('Item removido', 'success');
+            }
+        });
+}
+
+function clearAllHistory() {
+    if (!confirm('Limpar todo o histórico e remover todos os arquivos?')) return;
+
+    fetch('/api/clear-history', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+}
+</script>
+{% endblock %}
