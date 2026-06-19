@@ -6,7 +6,7 @@ Usando Jinja2, Font Awesome e yt-dlp
 Para rodar:
     python app.py
 Ou em producao:
-    gunicorn -w 4 -b 0.0.0.0:5540 app:app
+    gunicorn -w 2 -b 0.0.0.0:5540 app:app
 
 Requisitos: pip install -r requirements.txt
 """
@@ -157,6 +157,23 @@ def start_cleanup_thread():
     thread.start()
 
 
+def is_playlist_url(url: str) -> bool:
+    """Verifica se a URL é de uma playlist."""
+    return bool(re.search(r'(list=|/playlist\?)', url))
+
+
+def extract_single_video_url(info: dict) -> Optional[str]:
+    """
+    Se o info for de uma playlist, extrai apenas a URL do primeiro video.
+    Retorna a URL original se nao for playlist.
+    """
+    if 'entries' in info and info['entries']:
+        first_entry = info['entries'][0]
+        if first_entry and 'webpage_url' in first_entry:
+            return first_entry['webpage_url']
+    return None
+
+
 # YT-DLP Manager
 class YTDLManager:
     @staticmethod
@@ -166,9 +183,17 @@ class YTDLManager:
                 'quiet': True,
                 'no_warnings': True,
                 'skip_download': True,
+                # Se for playlist, pega apenas o primeiro video
+                'playlist_items': '1',
+                'extract_flat': False,
             }
             with YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
+                # Se for playlist, retorna apenas o primeiro item
+                if 'entries' in info and info['entries']:
+                    first_entry = info['entries'][0]
+                    if first_entry:
+                        return first_entry
                 return info
         except Exception as e:
             print(f"[INFO] Erro: {e}")
@@ -226,6 +251,8 @@ class YTDLManager:
                 'merge_output_format': 'mp4',
                 'quiet': True,
                 'no_warnings': True,
+                # Baixar apenas o primeiro item se for playlist
+                'playlist_items': '1',
                 'postprocessors': [{
                     'key': 'FFmpegMetadata',
                     'add_metadata': True,
@@ -236,6 +263,13 @@ class YTDLManager:
 
             with YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
+
+                # Se for playlist, pega o primeiro video
+                if 'entries' in info and info['entries']:
+                    first_entry = info['entries'][0]
+                    if first_entry:
+                        info = first_entry
+
                 filename = ydl.prepare_filename(info)
                 if not os.path.exists(filename):
                     base = os.path.splitext(filename)[0]
@@ -297,6 +331,8 @@ class YTDLManager:
                 'format': 'bestaudio/best',
                 'quiet': True,
                 'no_warnings': True,
+                # Baixar apenas o primeiro item se for playlist
+                'playlist_items': '1',
                 'postprocessors': [
                     {
                         'key': 'FFmpegExtractAudio',
@@ -317,6 +353,13 @@ class YTDLManager:
 
             with YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
+
+                # Se for playlist, pega o primeiro video
+                if 'entries' in info and info['entries']:
+                    first_entry = info['entries'][0]
+                    if first_entry:
+                        info = first_entry
+
                 filename = ydl.prepare_filename(info)
                 base = os.path.splitext(filename)[0]
 
@@ -376,6 +419,9 @@ def info():
         flash("Nao foi possivel obter informacoes do video.", "error")
         return redirect(url_for("index"))
 
+    # Verifica se é playlist e avisa que so o primeiro video sera processado
+    is_playlist = is_playlist_url(url)
+
     video_info = {
         "title": info_data.get("title", "Desconhecido"),
         "channel": info_data.get("uploader", "Desconhecido"),
@@ -388,8 +434,8 @@ def info():
         "thumbnail": info_data.get("thumbnail", ""),
         "url": url,
         "video_id": extract_video_id(url),
-        "is_playlist": "entries" in info_data,
-        "playlist_count": len(info_data.get("entries", [])) if "entries" in info_data else 1,
+        "is_playlist": is_playlist,
+        "playlist_count": 1,
     }
 
     return render_template("info.html", video=video_info)
